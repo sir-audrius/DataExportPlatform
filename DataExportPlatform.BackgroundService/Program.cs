@@ -1,43 +1,37 @@
 ﻿using DataExportPlatform.Shared;
-using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using System;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace DataExportPlatform.BackgroundService
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine("Hello World!");
 
-            var factory = new ConnectionFactory() { HostName = "localhost" };
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
-            {
-                channel.QueueDeclare(queue: "DataExportRegistered",
-                                     durable: false,
-                                     exclusive: false,
-                                     autoDelete: false,
-                                     arguments: null);
-
-                var consumer = new EventingBasicConsumer(channel);
-                consumer.Received += (model, ea) =>
-                {
-                    var body = ea.Body.ToArray();
-                    var message = JsonConvert.DeserializeObject<DataExportRegisteredMessage> (Encoding.UTF8.GetString(body));
-
-                    Console.WriteLine($" [x] Received created message for record #{message.Id}");
-                };
-                channel.BasicConsume(queue: "DataExportRegistered",
-                                     autoAck: true,
-                                     consumer: consumer);
-
-                Console.WriteLine(" Press [enter] to exit.");
-                Console.ReadLine();
-            }
+            await CreateHostBuilder(args)
+                .Build()
+                .RunAsync();
         }
+
+        static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureServices((_, services) => {
+                    var factory = new ConnectionFactory() { HostName = "localhost", DispatchConsumersAsync = true };
+                    var connection = factory.CreateConnection();
+                    var channel = connection.CreateModel();
+
+                    services.AddSingleton(channel);
+                    services.AddHostedService<BackgoundProcess>();
+                    services.AddScoped<IDataExportRegisteredHandler, DataExportRegisteredHandler>();
+
+                    services.AddDbContext<DataExportContext>(
+                        options => options.UseSqlServer(@"Server=(local);Database=DataExport;User ID=sa;Password=ABcd1234"));
+                });
     }
 }
