@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
 
 namespace DataExportPlatform
 {
@@ -19,12 +21,24 @@ namespace DataExportPlatform
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services
+                .AddControllersWithViews()
+                .AddJsonOptions(opts =>
+                {
+                    var enumConverter = new JsonStringEnumConverter();
+                    opts.JsonSerializerOptions.Converters.Add(enumConverter);
+                });
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
             });
+
+            services.AddDbContext<DataExportContext>(
+                options => options.UseSqlServer(@"Server=(local);Database=DataExport;User ID=sa;Password=ABcd1234"));
+
+            services.AddScoped<IDataExportRegistrationHandler, DataExportRegistrationHandler>();
+            services.AddScoped<IDataExportListReader, DataExportListReader>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +50,7 @@ namespace DataExportPlatform
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler(" / Error");
             }
 
             app.UseStaticFiles();
@@ -66,6 +80,12 @@ namespace DataExportPlatform
                     spa.UseAngularCliServer(npmScript: "start");
                 }
             });
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<DataExportContext>();
+                context.Database.EnsureCreated();
+            }
         }
     }
 }
