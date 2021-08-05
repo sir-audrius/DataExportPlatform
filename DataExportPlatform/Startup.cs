@@ -1,3 +1,4 @@
+using DataExportPlatform.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
@@ -5,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using RabbitMQ.Client;
 using System.Text.Json.Serialization;
 
 namespace DataExportPlatform
@@ -39,6 +41,18 @@ namespace DataExportPlatform
 
             services.AddScoped<IDataExportRegistrationHandler, DataExportRegistrationHandler>();
             services.AddScoped<IDataExportListReader, DataExportListReader>();
+            services.AddSingleton<IMessageBus, MessageBus>();
+
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var connection = factory.CreateConnection();
+            var channel = connection.CreateModel();
+            channel.QueueDeclare(queue: "DataExportRegistered",
+                                    durable: false,
+                                    exclusive: false,
+                                    autoDelete: false,
+                                    arguments: null);
+
+            services.AddSingleton(channel);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

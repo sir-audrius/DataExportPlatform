@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace DataExportPlatform
+namespace DataExportPlatform.Shared
 {
-    public class DataExportContext: DbContext
+    public class DataExportContext : DbContext
     {
         public DataExportContext(DbContextOptions<DataExportContext> options)
         : base(options)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DataExportPlatform.Shared;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DataExportPlatform
