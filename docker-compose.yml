@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  dataexportplatform:
+    image: ${DOCKER_REGISTRY-}dataexportplatform
+    build:
+      context: .
+      dockerfile: DataExportPlatform/Dockerfile
+  dataexportbacgroundprocess:
+    image: ${DOCKER_REGISTRY-}dataexportbacgroundprocess
+    build:
+      context: .
+      dockerfile: DataExportPlatform.BackgroundService/Dockerfile
+  rabbit:
+    image: ${DOCKER_REGISTRY-}rabbitmq:3
+    hostname: my-rabbit
+    ports:
+      - "5672:5672"
+  sql:
+    image: ${DOCKER_REGISTRY-}mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
+    environment:
+      SA_PASSWORD: ABcd1234
+      ACCEPT_EULA: "Y"
+    ports:
+    - "1433:1433"

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "DataExportPlatform.BackgroundService": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

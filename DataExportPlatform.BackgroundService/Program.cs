@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataExportPlatform.BackgroundService
@@ -22,17 +23,30 @@ namespace DataExportPlatform.BackgroundService
         static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((_, services) => {
-                    var factory = new ConnectionFactory() { HostName = "localhost", DispatchConsumersAsync = true };
-                    var connection = factory.CreateConnection();
-                    var channel = connection.CreateModel();
+                    for (int i = 0; i < 10; i++)
+                    {
+                        try
+                        {
+                            var factory = new ConnectionFactory() { HostName = "rabbit", DispatchConsumersAsync = true };
+                            var connection = factory.CreateConnection();
+                            var channel = connection.CreateModel();
 
-                    services.AddSingleton(channel);
+                            services.AddSingleton(channel);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                            Thread.Sleep(TimeSpan.FromSeconds(10));
+                        }
+                    }
+                    
                     services.AddHostedService<BackgoundProcess>();
                     services.AddScoped<IDataExportRegisteredHandler, DataExportRegisteredHandler>();
                     services.AddSingleton<IMessageBus, MessageBus>();
 
                     services.AddDbContext<DataExportContext>(
-                        options => options.UseSqlServer(@"Server=(local);Database=DataExport;User ID=sa;Password=ABcd1234"));
+                        options => options.UseSqlServer(@"Server=sql;Database=DataExport;User ID=sa;Password=ABcd1234"));
                 });
     }
 }

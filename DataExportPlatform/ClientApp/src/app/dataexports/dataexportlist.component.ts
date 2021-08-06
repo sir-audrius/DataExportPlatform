@@ -23,18 +23,18 @@ export class DataExportListComponent {
     }
 
     public createNewExport (){
-        this.http.post('http://localhost:42779/DataExport', null).subscribe(data => {
+        this.http.post('/DataExport', null).subscribe(data => {
             console.log('click response');
         })
     }
 
     ngOnInit(): void {  
-        this.http.get<DataExport[]>('http://localhost:42779/DataExport')
+        this.http.get<DataExport[]>('/DataExport')
             .subscribe((data: DataExport[]) => this.dataExports = data);
       
         const connection = new signalR.HubConnectionBuilder()  
           .configureLogging(signalR.LogLevel.Information)  
-          .withUrl('http://localhost:42779/exportHub')  
+          .withUrl('/exportHub')  
           .build();  
       
         connection.start().then(function () {  

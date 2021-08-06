@@ -10,7 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
+using System;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 namespace DataExportPlatform
 {
@@ -48,7 +50,7 @@ namespace DataExportPlatform
             });
 
             services.AddDbContext<DataExportContext>(
-                options => options.UseSqlServer(@"Server=(local);Database=DataExport;User ID=sa;Password=ABcd1234"));
+                options => options.UseSqlServer(@"Server=sql;Database=DataExport;User ID=sa;Password=ABcd1234"));
 
             services.AddScoped<IDataExportRegistrationHandler, DataExportRegistrationHandler>();
             services.AddScoped<IDataExportListReader, DataExportListReader>();
@@ -57,22 +59,36 @@ namespace DataExportPlatform
             services.AddScoped<IDataExportUpdatedHandler, DataExportUpdatedHandler>();
             services.AddScoped<IDataExportDetailsReader, DataExportDetailsReader>();
 
-            var factory = new ConnectionFactory() { HostName = "localhost", DispatchConsumersAsync = true };
-            var connection = factory.CreateConnection();
-            var channel = connection.CreateModel();
-            channel.QueueDeclare(queue: "DataExportRegistered",
+            for (int i = 0; i < 10; i++)
+            {
+                try
+                {
+                    var factory = new ConnectionFactory() { HostName = "rabbit", DispatchConsumersAsync = true };
+                    var connection = factory.CreateConnection();
+                    var channel = connection.CreateModel();
+
+                    channel.QueueDeclare(queue: "DataExportRegistered",
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,
                                     arguments: null);
 
-            channel.QueueDeclare(queue: "DataExportUpdated",
-                                    durable: false,
-                                    exclusive: false,
-                                    autoDelete: false,
-                                    arguments: null);
+                    channel.QueueDeclare(queue: "DataExportUpdated",
+                                            durable: false,
+                                            exclusive: false,
+                                            autoDelete: false,
+                                            arguments: null);
 
-            services.AddSingleton(channel);
+                    services.AddSingleton(channel);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Thread.Sleep(TimeSpan.FromSeconds(10));
+                }
+            }
+
             services.AddHostedService<BackgoundMessageListener>();
             
             services.AddSwaggerGen();

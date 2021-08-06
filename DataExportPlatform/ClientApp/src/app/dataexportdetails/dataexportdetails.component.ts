@@ -14,7 +14,7 @@ export class DataExportDetailsComponent {
 
     ngOnInit(): void {  
       this.route.queryParams.subscribe(params => {
-        this.http.get<DataExportDetails>('http://localhost:42779/DataExport/' + params['id'])
+        this.http.get<DataExportDetails>('/DataExport/' + params['id'])
             .subscribe((data: DataExportDetails) => this.dataExport = data);
       });        
     }    
