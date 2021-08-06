@@ -1,0 +1,14 @@
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let export of dataExports">
+            <td>{{export.name}}</td>
+            <td>{{export.status}}</td>
+        </tr>
+    </tbody>
+</table>
