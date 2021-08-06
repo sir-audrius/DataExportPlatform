@@ -18,7 +18,6 @@ export class DataExportListComponent {
     }
 
     public createNewExport (){
-        console.log('click')
         this.http.post('http://localhost:42779/DataExport', null).subscribe(data => {
             console.log('click response');
         })

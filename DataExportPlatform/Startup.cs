@@ -52,8 +52,9 @@ namespace DataExportPlatform
             services.AddScoped<IDataExportListReader, DataExportListReader>();
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddScoped<IPushNotificationService, PushNotificationService>();
+            services.AddScoped<IDataExportUpdatedHandler, DataExportUpdatedHandler>();
 
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var factory = new ConnectionFactory() { HostName = "localhost", DispatchConsumersAsync = true };
             var connection = factory.CreateConnection();
             var channel = connection.CreateModel();
             channel.QueueDeclare(queue: "DataExportRegistered",
@@ -62,7 +63,14 @@ namespace DataExportPlatform
                                     autoDelete: false,
                                     arguments: null);
 
+            channel.QueueDeclare(queue: "DataExportUpdated",
+                                    durable: false,
+                                    exclusive: false,
+                                    autoDelete: false,
+                                    arguments: null);
+
             services.AddSingleton(channel);
+            services.AddHostedService<BackgoundMessageListener>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

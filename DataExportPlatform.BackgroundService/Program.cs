@@ -29,6 +29,7 @@ namespace DataExportPlatform.BackgroundService
                     services.AddSingleton(channel);
                     services.AddHostedService<BackgoundProcess>();
                     services.AddScoped<IDataExportRegisteredHandler, DataExportRegisteredHandler>();
+                    services.AddSingleton<IMessageBus, MessageBus>();
 
                     services.AddDbContext<DataExportContext>(
                         options => options.UseSqlServer(@"Server=(local);Database=DataExport;User ID=sa;Password=ABcd1234"));

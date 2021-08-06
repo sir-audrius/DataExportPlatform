@@ -12,11 +12,13 @@ namespace DataExportPlatform.BackgroundService
     public class DataExportRegisteredHandler : IDataExportRegisteredHandler
     {
         private readonly DataExportContext _dataExportContext;
+        private readonly IMessageBus _messageBus;
         private readonly Random _random = new Random();
 
-        public DataExportRegisteredHandler(DataExportContext dataExportContext)
+        public DataExportRegisteredHandler(DataExportContext dataExportContext, IMessageBus messageBus)
         {
             _dataExportContext = dataExportContext;
+            _messageBus = messageBus;
         }
 
         public async Task Handle(DataExportRegisteredMessage message)
@@ -24,12 +26,14 @@ namespace DataExportPlatform.BackgroundService
             var export = _dataExportContext.DataExports.Find(message.Id);
             export.Status = DataExportStatus.Started;
             _dataExportContext.SaveChanges();
+            _messageBus.SendUpdated(message.Id);
 
             var delay = _random.Next(5, 10);
             await Task.Delay(TimeSpan.FromSeconds(delay));
 
             export.Status = DataExportStatus.Completed;
             _dataExportContext.SaveChanges();
+            _messageBus.SendUpdated(message.Id);
         }
     }
 }

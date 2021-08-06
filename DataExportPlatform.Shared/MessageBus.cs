@@ -7,6 +7,7 @@ namespace DataExportPlatform.Shared
     public interface IMessageBus
     {
         void SendRegistered(int id);
+        void SendUpdated(int id);
     }
 
     public class MessageBus : IMessageBus
@@ -28,6 +29,20 @@ namespace DataExportPlatform.Shared
             var serializedMessage = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
             _rabbit.BasicPublish(exchange: "",
                                  routingKey: "DataExportRegistered",
+                                 basicProperties: null,
+                                 body: serializedMessage);
+        }
+
+        public void SendUpdated(int id)
+        {
+            var message = new DataExportUpdatedMessage
+            {
+                Id = id
+            };
+
+            var serializedMessage = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+            _rabbit.BasicPublish(exchange: "",
+                                 routingKey: "DataExportUpdated",
                                  basicProperties: null,
                                  body: serializedMessage);
         }

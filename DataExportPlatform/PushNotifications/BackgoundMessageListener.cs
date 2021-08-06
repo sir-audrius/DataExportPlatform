@@ -9,14 +9,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DataExportPlatform.BackgroundService
+namespace DataExportPlatform.PushNotifications
 {
-    public class BackgoundProcess : IHostedService
+    public class BackgoundMessageListener : IHostedService
     {
         private readonly IModel _rabbit;
         private readonly IServiceProvider _serviceProvider;
 
-        public BackgoundProcess(IModel rabbit, IServiceProvider serviceProvider)
+        public BackgoundMessageListener(IModel rabbit, IServiceProvider serviceProvider)
         {
             _rabbit = rabbit;
             _serviceProvider = serviceProvider;
@@ -24,7 +24,7 @@ namespace DataExportPlatform.BackgroundService
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _rabbit.QueueDeclare(queue: "DataExportRegistered",
+            _rabbit.QueueDeclare(queue: "DataExportUpdated",
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,
@@ -38,20 +38,19 @@ namespace DataExportPlatform.BackgroundService
                     using (var scope = _serviceProvider.CreateScope())
                     {
                         var body = ea.Body.ToArray();
-                        var message = JsonConvert.DeserializeObject<DataExportRegisteredMessage>(Encoding.UTF8.GetString(body));
-                        Console.WriteLine($" [x] Received created message for record #{message.Id}");
-                        var handler = scope.ServiceProvider.GetService(typeof(IDataExportRegisteredHandler)) as IDataExportRegisteredHandler;
+                        var message = JsonConvert.DeserializeObject<DataExportUpdatedMessage>(Encoding.UTF8.GetString(body));
+                        var handler = scope.ServiceProvider.GetService(typeof(IDataExportUpdatedHandler)) as IDataExportUpdatedHandler;
                         await handler.Handle(message);
                         _rabbit.BasicAck(ea.DeliveryTag, false);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                     throw;
                 }
             };
-            _rabbit.BasicConsume(queue: "DataExportRegistered",
+            _rabbit.BasicConsume(queue: "DataExportUpdated",
                                     autoAck: false,
                                     consumer: consumer);
 
