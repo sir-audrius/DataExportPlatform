@@ -24,6 +24,7 @@ namespace DataExportPlatform.PushNotifications
             var record = await _dataExportContext.FindAsync<DataExportRecord>(message.Id);
             await _pushNotificationService.PushDataExportUpdatedAsync(new DataExport
             {
+                Id = record.Id,
                 Name = record.Name,
                 Status = record.Status
             });

@@ -24,6 +24,7 @@ namespace DataExportPlatform
                 .OrderByDescending(x => x.Id)
                 .Select(x=> new DataExport
                 {
+                    Id = x.Id,
                     Name = x.Name,
                     Status = x.Status
                 })

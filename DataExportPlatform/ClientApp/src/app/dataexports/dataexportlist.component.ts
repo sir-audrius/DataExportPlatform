@@ -14,7 +14,12 @@ export class DataExportListComponent {
 
     public updateExport(dataExport: DataExport){
         console.log(dataExport);
-        this.dataExports.unshift(dataExport);
+        var existingRecord = this.dataExports.find(x=>x.id == dataExport.id);
+        if (existingRecord == null){
+            this.dataExports.unshift(dataExport);
+        } else {
+            existingRecord.status = dataExport.status;
+        }
     }
 
     public createNewExport (){
