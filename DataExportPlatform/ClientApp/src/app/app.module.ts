@@ -8,13 +8,15 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { DataExportListComponent } from './dataexports/dataexportlist.component';
+import { DataExportDetailsComponent } from './dataexportdetails/dataexportdetails.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    DataExportListComponent
+    DataExportListComponent,
+    DataExportDetailsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -22,6 +24,7 @@ import { DataExportListComponent } from './dataexports/dataexportlist.component'
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: DataExportListComponent, pathMatch: 'full' },
+      { path: 'export', component: DataExportDetailsComponent, pathMatch: 'full' }
     ])
   ],
   providers: [],

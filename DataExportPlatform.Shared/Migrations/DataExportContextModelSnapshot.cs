@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace DataExportPlatform.Migrations
+namespace DataExportPlatform.Shared.Migrations
 {
     [DbContext(typeof(DataExportContext))]
     partial class DataExportContextModelSnapshot : ModelSnapshot
@@ -18,7 +18,7 @@ namespace DataExportPlatform.Migrations
                 .HasAnnotation("ProductVersion", "5.0.8")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("DataExportPlatform.DataExportRecord", b =>
+            modelBuilder.Entity("DataExportPlatform.Shared.DataExportRecord", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -26,6 +26,9 @@ namespace DataExportPlatform.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Result")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")

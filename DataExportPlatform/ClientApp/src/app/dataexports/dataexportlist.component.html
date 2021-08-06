@@ -8,7 +8,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let export of dataExports">
-            <td>{{export.name}}</td>
+            <td><a [routerLink]="['/export']" [queryParams]="{id: export.id}">{{export.name}}</a></td>
             <td>{{export.status}}</td>
         </tr>
     </tbody>

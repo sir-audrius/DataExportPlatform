@@ -32,6 +32,7 @@ namespace DataExportPlatform.BackgroundService
             await Task.Delay(TimeSpan.FromSeconds(delay));
 
             export.Status = DataExportStatus.Completed;
+            export.Result = $"completed on {DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK")}";
             _dataExportContext.SaveChanges();
             _messageBus.SendUpdated(message.Id);
         }

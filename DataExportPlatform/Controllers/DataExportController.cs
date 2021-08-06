@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DataExportPlatform.DataExport.Details;
+using DataExportPlatform.DataExport.List;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,18 +14,26 @@ namespace DataExportPlatform.Controllers
         private readonly ILogger<DataExportController> _logger;
         private readonly IDataExportRegistrationHandler _registrationHandler;
         private readonly IDataExportListReader _dataExportListReader;
+        private readonly IDataExportDetailsReader _dataExportDetailsReader;
 
-        public DataExportController(ILogger<DataExportController> logger, IDataExportRegistrationHandler registrationHandler, IDataExportListReader dataExportListReader)
+        public DataExportController(ILogger<DataExportController> logger, IDataExportRegistrationHandler registrationHandler, IDataExportListReader dataExportListReader, IDataExportDetailsReader dataExportDetailsReader)
         {
             _logger = logger;
             _registrationHandler = registrationHandler;
             _dataExportListReader = dataExportListReader;
+            _dataExportDetailsReader = dataExportDetailsReader;
         }
 
-        [HttpGet]
-        public IEnumerable<DataExport> Get()
+        [HttpGet("")]
+        public async Task<IEnumerable<DataExport.List.DataExport>> GetAsync()
         {
-            return _dataExportListReader.Read();
+            return await _dataExportListReader.ReadAsync();
+        }
+
+        [HttpGet("{id}")]
+        public async Task<DataExportDetails> GetDetailsAsync(int id)
+        {
+            return await _dataExportDetailsReader.ReadAsync(id);
         }
 
         [HttpPost]

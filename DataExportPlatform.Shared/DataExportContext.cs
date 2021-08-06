@@ -4,6 +4,11 @@ namespace DataExportPlatform.Shared
 {
     public class DataExportContext : DbContext
     {
+        public DataExportContext()
+        : base()
+        {
+        }
+
         public DataExportContext(DbContextOptions<DataExportContext> options)
         : base(options)
         {
@@ -17,5 +22,6 @@ namespace DataExportPlatform.Shared
         public int Id { get; set; }
         public string Name { get; set; }
         public DataExportStatus Status { get; set; }
+        public string Result { get; set; }
     }
 }

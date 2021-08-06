@@ -33,7 +33,7 @@ namespace DataExportPlatform
             _dataExportContext.DataExports.Add(record);
             _dataExportContext.SaveChanges();
             _messageBus.SendRegistered(record.Id);
-            await _pushNotificationService.PushDataExportUpdatedAsync(new DataExport
+            await _pushNotificationService.PushDataExportUpdatedAsync(new DataExport.List.DataExport
             {
                 Id = record.Id,
                 Name = record.Name,

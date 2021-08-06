@@ -5,7 +5,7 @@ namespace DataExportPlatform.PushNotifications
 {
     public interface IPushNotificationService
     {
-        Task PushDataExportUpdatedAsync(DataExport dataExport);
+        Task PushDataExportUpdatedAsync(DataExport.List.DataExport dataExport);
     }
 
     public class PushNotificationService : IPushNotificationService
@@ -17,7 +17,7 @@ namespace DataExportPlatform.PushNotifications
             _dataExportHub = dataExportHub;
         }
 
-        public async Task PushDataExportUpdatedAsync(DataExport dataExport)
+        public async Task PushDataExportUpdatedAsync(DataExport.List.DataExport dataExport)
         {
             await _dataExportHub.Clients.All.SendExportUpdated(dataExport);
         }

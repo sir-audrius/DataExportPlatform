@@ -1,3 +1,5 @@
+using DataExportPlatform.DataExport.Details;
+using DataExportPlatform.DataExport.List;
 using DataExportPlatform.PushNotifications;
 using DataExportPlatform.Shared;
 using Microsoft.AspNetCore.Builder;
@@ -53,6 +55,7 @@ namespace DataExportPlatform
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddScoped<IPushNotificationService, PushNotificationService>();
             services.AddScoped<IDataExportUpdatedHandler, DataExportUpdatedHandler>();
+            services.AddScoped<IDataExportDetailsReader, DataExportDetailsReader>();
 
             var factory = new ConnectionFactory() { HostName = "localhost", DispatchConsumersAsync = true };
             var connection = factory.CreateConnection();

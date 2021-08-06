@@ -22,7 +22,7 @@ namespace DataExportPlatform.PushNotifications
         public async Task Handle(DataExportUpdatedMessage message)
         {
             var record = await _dataExportContext.FindAsync<DataExportRecord>(message.Id);
-            await _pushNotificationService.PushDataExportUpdatedAsync(new DataExport
+            await _pushNotificationService.PushDataExportUpdatedAsync(new DataExport.List.DataExport
             {
                 Id = record.Id,
                 Name = record.Name,

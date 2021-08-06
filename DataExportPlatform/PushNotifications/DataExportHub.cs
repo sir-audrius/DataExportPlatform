@@ -5,12 +5,12 @@ namespace DataExportPlatform.PushNotifications
 {
     public interface IDataExportHub
     {
-        Task SendExportUpdated(DataExport dataExport);
+        Task SendExportUpdated(DataExport.List.DataExport dataExport);
     }
 
     public class DataExportHub : Hub<IDataExportHub>, IDataExportHub
     {
-        public async Task SendExportUpdated(DataExport dataExport)
+        public async Task SendExportUpdated(DataExport.List.DataExport dataExport)
         {
             await Clients.All.SendExportUpdated(dataExport);
         }

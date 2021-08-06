@@ -1,12 +1,14 @@
 ﻿using DataExportPlatform.Shared;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace DataExportPlatform
+namespace DataExportPlatform.DataExport.List
 {
     public interface IDataExportListReader
     {
-        IList<DataExport> Read();
+        Task<IList<DataExport>> ReadAsync();
     }
 
     public class DataExportListReader : IDataExportListReader
@@ -18,18 +20,18 @@ namespace DataExportPlatform
             _dataExportContext = dataExportContext;
         }
 
-        public IList<DataExport> Read()
+        public async Task<IList<DataExport>> ReadAsync()
         {
-            return _dataExportContext.DataExports
+            return await _dataExportContext.DataExports
                 .OrderByDescending(x => x.Id)
-                .Select(x=> new DataExport
+                .Select(x => new DataExport
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Status = x.Status
                 })
                 .Take(20)
-                .ToList();
+                .ToListAsync();
         }
     }
 }
