@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import * as signalR from '@microsoft/signalr';  
 
 @Component({
   selector: 'data-export-list',
@@ -7,9 +8,37 @@ import { Component } from '@angular/core';
 })
 export class DataExportListComponent {
     constructor(private http: HttpClient) {
-        this.http.get<DataExport[]>('http://localhost:42779/DataExport')
-            .subscribe((data: DataExport[]) => this.dataExports = data);
     }
 
-    private dataExports;
+    private dataExports: DataExport[];
+
+    public updateExport(dataExport: DataExport){
+        console.log(dataExport);
+        this.dataExports.unshift(dataExport);
+    }
+
+    public createNewExport (){
+        console.log('click')
+        this.http.post('http://localhost:42779/DataExport', null).subscribe(data => {
+            console.log('click response');
+        })
+    }
+
+    ngOnInit(): void {  
+        this.http.get<DataExport[]>('http://localhost:42779/DataExport')
+            .subscribe((data: DataExport[]) => this.dataExports = data);
+      
+        const connection = new signalR.HubConnectionBuilder()  
+          .configureLogging(signalR.LogLevel.Information)  
+          .withUrl('http://localhost:42779/exportHub')  
+          .build();  
+      
+        connection.start().then(function () {  
+          console.log('SignalR Connected!');  
+        }).catch(function (err) {  
+          return console.error(err.toString());  
+        });  
+      
+        connection.on("SendExportUpdated", this.updateExport.bind(this));  
+    }    
 }

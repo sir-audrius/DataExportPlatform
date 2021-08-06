@@ -1,3 +1,4 @@
+using DataExportPlatform.PushNotifications;
 using DataExportPlatform.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,11 +26,19 @@ namespace DataExportPlatform
         {
             services
                 .AddControllersWithViews()
-                .AddJsonOptions(opts =>
+                .AddJsonOptions(options =>
                 {
                     var enumConverter = new JsonStringEnumConverter();
-                    opts.JsonSerializerOptions.Converters.Add(enumConverter);
+                    options.JsonSerializerOptions.Converters.Add(enumConverter);
                 });
+            services
+                .AddSignalR()
+                .AddJsonProtocol(options =>
+                {
+                    var enumConverter = new JsonStringEnumConverter();
+                    options.PayloadSerializerOptions.Converters.Add(enumConverter);
+                });
+
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
@@ -42,6 +51,7 @@ namespace DataExportPlatform
             services.AddScoped<IDataExportRegistrationHandler, DataExportRegistrationHandler>();
             services.AddScoped<IDataExportListReader, DataExportListReader>();
             services.AddSingleton<IMessageBus, MessageBus>();
+            services.AddScoped<IPushNotificationService, PushNotificationService>();
 
             var factory = new ConnectionFactory() { HostName = "localhost" };
             var connection = factory.CreateConnection();
@@ -77,6 +87,7 @@ namespace DataExportPlatform
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<DataExportHub>("/exportHub");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");

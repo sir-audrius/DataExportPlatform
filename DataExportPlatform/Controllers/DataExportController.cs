@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DataExportPlatform.Controllers
 {
@@ -26,9 +27,9 @@ namespace DataExportPlatform.Controllers
         }
 
         [HttpPost]
-        public void Register()
+        public async Task RegisterAsync()
         {
-            _registrationHandler.Handle();
+            await _registrationHandler.HandleAsync();
         }
     }
 }
