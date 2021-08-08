@@ -24,11 +24,17 @@ namespace DataExportPlatform.BackgroundService
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _rabbit.QueueDeclare(queue: "DataExportRegistered",
+            var exchangeName = "DataExportRegistered";
+            _rabbit.QueueDeclare(queue: exchangeName,
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,
-                                    arguments: null);
+                                    arguments: null);           
+
+            _rabbit.ExchangeDeclare(exchangeName, ExchangeType.Fanout);
+
+
+            _rabbit.QueueBind(exchangeName, exchangeName, string.Empty, null);
 
             var consumer = new AsyncEventingBasicConsumer(_rabbit);
             consumer.Received += async (model, ea) =>

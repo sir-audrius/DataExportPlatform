@@ -27,8 +27,8 @@ namespace DataExportPlatform.Shared
             };
 
             var serializedMessage = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
-            _rabbit.BasicPublish(exchange: "",
-                                 routingKey: "DataExportRegistered",
+            _rabbit.BasicPublish(exchange: "DataExportRegistered",
+                                 routingKey: string.Empty,
                                  basicProperties: null,
                                  body: serializedMessage);
         }
@@ -41,8 +41,8 @@ namespace DataExportPlatform.Shared
             };
 
             var serializedMessage = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
-            _rabbit.BasicPublish(exchange: "",
-                                 routingKey: "DataExportUpdated",
+            _rabbit.BasicPublish(exchange: "DataExportUpdated",
+                                 routingKey: string.Empty,
                                  basicProperties: null,
                                  body: serializedMessage);
         }

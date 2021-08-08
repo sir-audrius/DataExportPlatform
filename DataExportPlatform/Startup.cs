@@ -57,6 +57,7 @@ namespace DataExportPlatform
             services.AddSingleton<IMessageBus, MessageBus>();
             services.AddScoped<IPushNotificationService, PushNotificationService>();
             services.AddScoped<IDataExportUpdatedHandler, DataExportUpdatedHandler>();
+            services.AddScoped<IDataExportRegisteredHandler, DataExportRegisteredHandler>();
             services.AddScoped<IDataExportDetailsReader, DataExportDetailsReader>();
 
             for (int i = 0; i < 10; i++)
@@ -66,18 +67,6 @@ namespace DataExportPlatform
                     var factory = new ConnectionFactory() { HostName = "rabbit", DispatchConsumersAsync = true };
                     var connection = factory.CreateConnection();
                     var channel = connection.CreateModel();
-
-                    channel.QueueDeclare(queue: "DataExportRegistered",
-                                    durable: false,
-                                    exclusive: false,
-                                    autoDelete: false,
-                                    arguments: null);
-
-                    channel.QueueDeclare(queue: "DataExportUpdated",
-                                            durable: false,
-                                            exclusive: false,
-                                            autoDelete: false,
-                                            arguments: null);
 
                     services.AddSingleton(channel);
                     break;

@@ -37,9 +37,9 @@ namespace DataExportPlatform.Controllers
         }
 
         [HttpPost]
-        public async Task RegisterAsync()
+        public void RegisterAsync()
         {
-            await _registrationHandler.HandleAsync();
+            _registrationHandler.Handle();
         }
     }
 }
