@@ -28,7 +28,7 @@ namespace DataExportPlatform.BackgroundService
             _dataExportContext.SaveChanges();
             _messageBus.SendUpdated(message.Id);
 
-            var delay = _random.Next(5, 10);
+            var delay = _random.Next(30, 60);
             await Task.Delay(TimeSpan.FromSeconds(delay));
 
             export.Status = DataExportStatus.Completed;
